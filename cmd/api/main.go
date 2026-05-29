@@ -23,7 +23,7 @@ func main() {
 	// Usecases
 	userUC := usecase.NewUserUsecase(userRepo, cfg.JWTSecret)
 	productUC := usecase.NewProductUsecase(productRepo)
-	orderUC := usecase.NewOrderUsecase(orderRepo, productRepo, db)
+	orderUC := usecase.NewOrderUsecase(orderRepo, db)
 
 	// Router
 	r := deliveryHttp.NewRouter(userUC, productUC, orderUC, cfg.JWTSecret)

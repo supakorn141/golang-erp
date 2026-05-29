@@ -1,14 +1,17 @@
 package domain
 
-import "gorm.io/gorm"
+import "time"
 
 type Product struct {
-	gorm.Model
-	Name     string  `gorm:"not null" json:"name"`
-	SKU      string  `gorm:"uniqueIndex;not null" json:"sku"`
-	Price    float64 `gorm:"not null" json:"price"`
-	Stock    int     `gorm:"default:0" json:"stock"`
-	Category string  `json:"category"`
+	ID        uint       `json:"id"`
+	CreatedAt time.Time  `json:"created_at"`
+	UpdatedAt time.Time  `json:"updated_at"`
+	DeletedAt *time.Time `json:"-"`
+	Name      string     `json:"name"`
+	SKU       string     `json:"sku"`
+	Price     float64    `json:"price"`
+	Stock     int        `json:"stock"`
+	Category  string     `json:"category"`
 }
 
 type ProductRepository interface {

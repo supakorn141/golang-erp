@@ -1,20 +1,27 @@
 package querybuilder
 
-import "gorm.io/gorm"
-
 // Pagination กำหนดการแบ่งหน้า
 type Pagination struct {
-	Page     int `json:"page"`      // หน้าที่ต้องการ (เริ่มที่ 1)
-	PageSize int `json:"page_size"` // จำนวนรายการต่อหน้า (default 20, max 100)
+	Page     int `json:"page"`
+	PageSize int `json:"page_size"`
 }
 
-// PageResult ผลลัพธ์พร้อม metadata
+// PageResult ผลลัพธ์พร้อม metadata การแบ่งหน้า
 type PageResult struct {
 	Data       any   `json:"data"`
 	Total      int64 `json:"total"`
 	Page       int   `json:"page"`
 	PageSize   int   `json:"page_size"`
 	TotalPages int   `json:"total_pages"`
+}
+
+// QueryParams รวม params ทั้งหมดที่รับจาก API
+type QueryParams struct {
+	Filters    []Filter    `json:"filters"`
+	GroupBy    GroupBy     `json:"group_by"`
+	Aggregates []Aggregate `json:"aggregates"`
+	OrderBy    []OrderBy   `json:"order_by"`
+	Pagination *Pagination `json:"pagination"`
 }
 
 func (p *Pagination) normalize() {
@@ -33,18 +40,10 @@ func (p *Pagination) offset() int {
 	return (p.Page - 1) * p.PageSize
 }
 
-func (p *Pagination) totalPages(total int64) int {
+func (p *Pagination) TotalPages(total int64) int {
 	pages := int(total) / p.PageSize
 	if int(total)%p.PageSize > 0 {
 		pages++
 	}
 	return pages
-}
-
-func applyPagination(db *gorm.DB, p *Pagination) *gorm.DB {
-	if p == nil {
-		return db
-	}
-	p.normalize()
-	return db.Offset(p.offset()).Limit(p.PageSize)
 }

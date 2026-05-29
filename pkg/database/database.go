@@ -1,34 +1,25 @@
 package database
 
 import (
+	"database/sql"
 	"fmt"
 	"log"
 
 	"github.com/supakorn141/golang-erp/internal/config"
-	"github.com/supakorn141/golang-erp/internal/domain"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
+	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
-func Connect(cfg *config.Config) *gorm.DB {
+func Connect(cfg *config.Config) *sql.DB {
 	dsn := fmt.Sprintf(
 		"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
 		cfg.DBHost, cfg.DBPort, cfg.DBUser, cfg.DBPass, cfg.DBName,
 	)
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	db, err := sql.Open("pgx", dsn)
 	if err != nil {
-		log.Fatalf("database connection failed: %v", err)
+		log.Fatalf("failed to open database: %v", err)
+	}
+	if err := db.Ping(); err != nil {
+		log.Fatalf("failed to connect to database: %v", err)
 	}
 	return db
-}
-
-func Migrate(db *gorm.DB) {
-	if err := db.AutoMigrate(
-		&domain.User{},
-		&domain.Product{},
-		&domain.Order{},
-		&domain.OrderItem{},
-	); err != nil {
-		log.Fatalf("migration failed: %v", err)
-	}
 }
