@@ -11,7 +11,6 @@ package-lock.json
 *.test
 *.out
 vendor/
-go.sum
 
 # Environment
 .env
