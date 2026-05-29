@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "@anthropic-ai/claude-code": "^2.1.156"
+    "@anthropic-ai/claude-code": "^2.1.156",
+    "go-npm": "^0.1.9"
   }
 }

@@ -4,23 +4,29 @@ import (
 	"log"
 
 	"github.com/supakorn141/golang-erp/internal/config"
-	"github.com/supakorn141/golang-erp/internal/handlers"
-	"github.com/supakorn141/golang-erp/internal/middleware"
+	deliveryHttp "github.com/supakorn141/golang-erp/internal/delivery/http"
+	"github.com/supakorn141/golang-erp/internal/repository"
+	"github.com/supakorn141/golang-erp/internal/usecase"
 	"github.com/supakorn141/golang-erp/pkg/database"
-
-	"github.com/gin-gonic/gin"
 )
 
 func main() {
 	cfg := config.Load()
-
 	db := database.Connect(cfg)
 	database.Migrate(db)
 
-	r := gin.Default()
-	r.Use(middleware.CORS())
+	// Repositories
+	userRepo := repository.NewUserRepository(db)
+	productRepo := repository.NewProductRepository(db)
+	orderRepo := repository.NewOrderRepository(db)
 
-	handlers.Register(r, db, cfg)
+	// Usecases
+	userUC := usecase.NewUserUsecase(userRepo, cfg.JWTSecret)
+	productUC := usecase.NewProductUsecase(productRepo)
+	orderUC := usecase.NewOrderUsecase(orderRepo, productRepo, db)
+
+	// Router
+	r := deliveryHttp.NewRouter(userUC, productUC, orderUC, cfg.JWTSecret)
 
 	log.Printf("Server running on port %s", cfg.Port)
 	if err := r.Run(":" + cfg.Port); err != nil {

@@ -5,7 +5,7 @@ import (
 	"log"
 
 	"github.com/supakorn141/golang-erp/internal/config"
-	"github.com/supakorn141/golang-erp/internal/models"
+	"github.com/supakorn141/golang-erp/internal/domain"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -24,10 +24,10 @@ func Connect(cfg *config.Config) *gorm.DB {
 
 func Migrate(db *gorm.DB) {
 	if err := db.AutoMigrate(
-		&models.User{},
-		&models.Product{},
-		&models.Order{},
-		&models.OrderItem{},
+		&domain.User{},
+		&domain.Product{},
+		&domain.Order{},
+		&domain.OrderItem{},
 	); err != nil {
 		log.Fatalf("migration failed: %v", err)
 	}

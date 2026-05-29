@@ -15,7 +15,6 @@ func Auth(secret string) gin.HandlerFunc {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "missing token"})
 			return
 		}
-
 		tokenStr := strings.TrimPrefix(authHeader, "Bearer ")
 		token, err := jwt.Parse(tokenStr, func(t *jwt.Token) (interface{}, error) {
 			return []byte(secret), nil
@@ -24,7 +23,6 @@ func Auth(secret string) gin.HandlerFunc {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid token"})
 			return
 		}
-
 		claims := token.Claims.(jwt.MapClaims)
 		c.Set("user_id", uint(claims["user_id"].(float64)))
 		c.Set("role", claims["role"])
